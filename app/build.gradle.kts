@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -17,13 +20,21 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField("Boolean", "ENABLE_LOGGING", "true")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("Boolean", "ENABLE_LOGGING", "false")
         }
     }
     compileOptions {
@@ -36,10 +47,39 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
+    // android dependencies
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.material)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
+    // hilt
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation)
+    ksp(libs.hilt.compiler)
+
+    // room
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
+    // retrofit & okhttp
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.serialization)
+    implementation(libs.okhttp.logging)
+
+    implementation(libs.kotlin.serialization)
+
     testImplementation(libs.junit)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+}
+
+hilt {
+    enableAggregatingTask = false
 }
