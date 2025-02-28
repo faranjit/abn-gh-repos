@@ -17,14 +17,14 @@ class RepoRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val remoteMediator: RemoteRepoMediator,
     private val pagingConfig: PagingConfig,
-    private val pagerFactory: PagerFactory
+    private val pagerFactory: PagerFactory<Int, RepoEntity>
 ) : RepoRepository {
 
     override fun getRepos(): Flow<PagingData<RepoEntity>> {
-        return pagerFactory.createPager(
+        return pagerFactory.createPagerFlow(
             config = pagingConfig,
             remoteMediator = if (connectivityChecker.isNetworkAvailable()) remoteMediator else null,
             pagingSourceFactory = { localDataSource.getAllRepos() }
-        ).flow
+        )
     }
 }

@@ -1,6 +1,7 @@
 package com.faranjit.ghrepos.ui.list
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,12 +37,15 @@ class ReposFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.recyclerRepos.adapter = repoAdapter
+        Log.d("ReposFragment", "onViewCreated called")
+        binding.recyclerRepos.apply {
+            adapter = repoAdapter
+        }
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.fetchRepos().collectLatest { data ->
+                viewModel.repos.collectLatest { data ->
+                    Log.d("ReposFragment", "Data collected: $data")
                     repoAdapter.submitData(data)
                 }
             }

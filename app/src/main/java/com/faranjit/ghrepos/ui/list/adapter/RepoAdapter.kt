@@ -1,5 +1,6 @@
 package com.faranjit.ghrepos.ui.list.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
@@ -21,7 +22,9 @@ class RepoAdapter : PagingDataAdapter<Repo, RepoAdapter.RepoViewHolder>(repoItem
     }
 
     override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it) }
+        val item = getItem(position)
+        Log.d("ReposFragment", "onBindViewHolder: position=$position, item=$item")
+        item?.let { holder.bind(it) }
     }
 
     class RepoViewHolder internal constructor(

@@ -27,7 +27,7 @@ class ReposViewModelTest {
 
     private val fetchReposUseCase: FetchReposUseCase = mockk()
 
-    private val viewModel = ReposViewModel(fetchReposUseCase)
+    private lateinit var viewModel: ReposViewModel
 
     @Before
     fun setup() {
@@ -46,9 +46,10 @@ class ReposViewModelTest {
         val pagingData = PagingData.from(repos)
         val flow = flowOf(pagingData)
         coEvery { fetchReposUseCase() } returns flow
+        viewModel = ReposViewModel(fetchReposUseCase)
 
         // When
-        val result = viewModel.fetchRepos()
+        val result = viewModel.repos
 
         // Then
         coVerify { fetchReposUseCase() }

@@ -2,7 +2,7 @@ package com.faranjit.ghrepos.di
 
 import androidx.paging.PagingConfig
 import com.faranjit.ghrepos.ConnectivityChecker
-import com.faranjit.ghrepos.data.DefaultPagerFactory
+import com.faranjit.ghrepos.data.DefaultRepoPagerFactory
 import com.faranjit.ghrepos.data.api.GithubApi
 import com.faranjit.ghrepos.data.datasource.LocalDataSource
 import com.faranjit.ghrepos.data.datasource.RemoteDataSource
@@ -66,8 +66,13 @@ object AppModule {
             connectivityChecker = connectivityChecker,
             localDataSource = localDataSource,
             remoteMediator = remoteMediator,
-            pagingConfig = PagingConfig(20),
-            pagerFactory = DefaultPagerFactory(),
+            pagingConfig = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false,
+                prefetchDistance = 5,
+                initialLoadSize = 20
+            ),
+            pagerFactory = DefaultRepoPagerFactory(),
         )
     }
 

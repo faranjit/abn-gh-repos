@@ -24,9 +24,11 @@ class RemoteRepoMediator @Inject constructor(
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
                     val remoteKeys = getRemoteKeyForLastItem(state)
-                        ?: return MediatorResult.Success(endOfPaginationReached = true)
-                    remoteKeys.nextKey
-                        ?: return MediatorResult.Success(endOfPaginationReached = true)
+                    val nextKey = remoteKeys?.nextKey
+                    nextKey ?: return MediatorResult.Success(
+                        endOfPaginationReached = remoteKeys != null
+                    )
+                    nextKey
                 }
             }
 

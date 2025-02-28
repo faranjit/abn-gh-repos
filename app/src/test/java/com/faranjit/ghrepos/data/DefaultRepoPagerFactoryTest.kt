@@ -4,6 +4,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.RemoteMediator
+import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -19,57 +20,56 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE)
 @OptIn(ExperimentalPagingApi::class)
-class DefaultPagerFactoryTest {
+class DefaultRepoPagerFactoryTest {
 
-    private val factory: PagerFactory = DefaultPagerFactory()
+    private val factory: PagerFactory<Int, RepoEntity> =
+        DefaultRepoPagerFactory()
 
     @Test
     fun `createPager should create pager with given config and mediator`() {
         // Given
         val config = PagingConfig(10)
-        val remoteMediator = mockk<RemoteMediator<Int, String>>()
-        val pagingSource = mockk<PagingSource<Int, String>>()
+        val remoteMediator = mockk<RemoteMediator<Int, RepoEntity>>()
+        val pagingSource = mockk<PagingSource<Int, RepoEntity>>()
 
         // When
-        val pager = factory.createPager(
+        val pagerFlow = factory.createPagerFlow(
             config = config,
             remoteMediator = remoteMediator
         ) { pagingSource }
 
         // Then
-        assertNotNull(pager)
-        assertNotNull(pager.flow)
+        assertNotNull(pagerFlow)
     }
 
     @Test
     fun `createPager should create pager without remote mediator`() {
         // Given
         val config = PagingConfig(10)
-        val pagingSource = mockk<PagingSource<Int, String>>()
+        val pagingSource = mockk<PagingSource<Int, RepoEntity>>()
 
         // When
-        val pager = factory.createPager(
+        val pagerFlow = factory.createPagerFlow(
             config = config,
             remoteMediator = null
         ) { pagingSource }
 
         // Then
-        assertNotNull(pager)
-        assertNotNull(pager.flow)
+        assertNotNull(pagerFlow)
     }
 
     @Test
     fun `createPager should use provided paging source factory`() = runTest {
         // Given
         val config = PagingConfig(10)
-        val pagingSource = mockk<PagingSource<Int, String>>().apply {
+        val pagingSource = mockk<PagingSource<Int, RepoEntity>>().apply {
             every { registerInvalidatedCallback(any()) } returns Unit
             coEvery { load(any()) } returns mockk()
         }
         var factoryCalled = false
 
         // When
-        val pager = factory.createPager(
+        val pagerFlow = factory.createPagerFlow(
             config = config,
             remoteMediator = null
         ) {
@@ -78,8 +78,8 @@ class DefaultPagerFactoryTest {
         }
 
         // Then
-        assertNotNull(pager)
-        pager.flow.take(1).collect {}
+        assertNotNull(pagerFlow)
+        pagerFlow.take(1).collect {}
         assertTrue(factoryCalled)
     }
 }

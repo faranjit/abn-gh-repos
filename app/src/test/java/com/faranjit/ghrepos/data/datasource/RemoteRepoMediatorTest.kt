@@ -6,7 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
-import com.faranjit.ghrepos.data.db.entity.OwnerEntity
+import com.faranjit.ghrepos.createRepoEntity
 import com.faranjit.ghrepos.data.db.entity.RemoteKeysEntity
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import com.faranjit.ghrepos.data.model.OwnerResponse
@@ -16,13 +16,13 @@ import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.mockk
 import io.mockk.slot
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalPagingApi::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalPagingApi::class)
 class RemoteRepoMediatorTest {
     private lateinit var remoteDataSource: RemoteDataSource
     private lateinit var localDataSource: LocalDataSource
@@ -93,7 +93,7 @@ class RemoteRepoMediatorTest {
     }
 
     @Test
-    fun `when load type is append and remote key is null, then return success with end of pagination`() =
+    fun `when load type is append and remote key is null, then return success with not end of pagination`() =
         runTest {
             // Given
             val pagingState = createPagingState(30)
@@ -104,14 +104,21 @@ class RemoteRepoMediatorTest {
 
             // Then
             assert(result is RemoteMediator.MediatorResult.Success)
-            assert((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+            assertFalse((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
         }
 
     @Test
     fun `when load type is append and nextKey is null, then return success with end of pagination`() =
         runTest {
             // Given
-            val pagingState = createPagingState(30)
+            val pagingState = createPagingState(
+                30,
+                listOf(
+                    PagingSource.LoadResult.Page(
+                        listOf(createRepoEntity(1)), 1, null
+                    )
+                )
+            )
             coEvery { localDataSource.getRemoteKeyForRepoId(any()) } returns RemoteKeysEntity(
                 repoId = 1,
                 prevKey = 1,
@@ -147,21 +154,7 @@ class RemoteRepoMediatorTest {
         val pageSize = 5
         val page = 2
         val repos = createMockRepos(pageSize)
-        val repoEntity = RepoEntity(
-            id = 1L,
-            repoId = 1L,
-            name = "repo",
-            fullName = "full name",
-            description = "description",
-            stars = 1,
-            owner = OwnerEntity(
-                ownerId = 1L,
-                login = "user",
-                avatarUrl = "https://avatar.com"
-            ),
-            htmlUrl = "url",
-            visibility = "public"
-        )
+        val repoEntity = createRepoEntity(1)
         val pagingState = PagingState(
             pages = listOf(
                 PagingSource.LoadResult.Page(
@@ -208,9 +201,12 @@ class RemoteRepoMediatorTest {
         }
     }
 
-    private fun createPagingState(pageSize: Int) =
-        PagingState<Int, RepoEntity>(
-            pages = listOf(),
+    private fun createPagingState(
+        pageSize: Int,
+        pages: List<PagingSource.LoadResult.Page<Int, RepoEntity>>? = null
+    ) =
+        PagingState(
+            pages = pages ?: listOf(),
             anchorPosition = null,
             config = PagingConfig(pageSize = pageSize),
             leadingPlaceholderCount = 0

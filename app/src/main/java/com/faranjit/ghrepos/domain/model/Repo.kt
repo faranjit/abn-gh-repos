@@ -21,7 +21,7 @@ data class RepoOwner(
 )
 
 internal fun RepoEntity.toRepoModel(): Repo = Repo(
-    id = id,
+    id = repoId,
     name = name,
     fullName = fullName,
     description = description,
