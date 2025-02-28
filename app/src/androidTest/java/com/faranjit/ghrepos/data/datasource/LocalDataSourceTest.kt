@@ -5,12 +5,12 @@ import androidx.paging.PagingSource
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.faranjit.ghrepos.createRepoEntities
+import com.faranjit.ghrepos.createRepoEntity
 import com.faranjit.ghrepos.data.db.AppDatabase
 import com.faranjit.ghrepos.data.db.RemoteKeysDao
 import com.faranjit.ghrepos.data.db.RepoDao
-import com.faranjit.ghrepos.data.db.entity.OwnerEntity
 import com.faranjit.ghrepos.data.db.entity.RemoteKeysEntity
-import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -46,23 +46,7 @@ class LocalDataSourceTest {
     @Test
     fun insertAndGetRepos() = runTest {
         // Given
-        val repos = List(3) { index ->
-            RepoEntity(
-                id = index.toLong(),
-                repoId = index.toLong(),
-                name = "repo $index",
-                fullName = "faranjit/repo$index",
-                description = "description $index",
-                stars = index * 2,
-                owner = OwnerEntity(
-                    ownerId = index.toLong(),
-                    login = "trabzonspor",
-                    avatarUrl = "https://avatar$index.url"
-                ),
-                htmlUrl = "https://repo$index.url",
-                visibility = "public"
-            )
-        }
+        val repos = createRepoEntities(3)
 
         // When
         dataSource.insertRepos(repos)
@@ -84,21 +68,7 @@ class LocalDataSourceTest {
     @Test
     fun clearAllRepos() = runTest {
         // Given
-        val repo = RepoEntity(
-            id = 1L,
-            repoId = 1L,
-            name = "test-repo",
-            fullName = "user/test-repo",
-            description = "description",
-            stars = 1,
-            owner = OwnerEntity(
-                ownerId = 61,
-                login = "trabzonspor",
-                avatarUrl = ""
-            ),
-            htmlUrl = "url",
-            visibility = "public"
-        )
+        val repo = createRepoEntity(1)
         dataSource.insertRepos(listOf(repo))
 
         // When

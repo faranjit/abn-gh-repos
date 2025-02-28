@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GH Repos</string>
+    <string name="content_desc_owner_avatar">Avatar of the owner of the repository</string>
+    <string name="content_desc_repo_visibility">Visibility of the repository</string>
 </resources>

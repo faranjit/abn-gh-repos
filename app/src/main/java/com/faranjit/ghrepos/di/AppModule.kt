@@ -67,10 +67,9 @@ object AppModule {
             localDataSource = localDataSource,
             remoteMediator = remoteMediator,
             pagingConfig = PagingConfig(
-                pageSize = 20,
+                pageSize = 10,
                 enablePlaceholders = false,
-                prefetchDistance = 5,
-                initialLoadSize = 20
+                initialLoadSize = 10
             ),
             pagerFactory = DefaultRepoPagerFactory(),
         )

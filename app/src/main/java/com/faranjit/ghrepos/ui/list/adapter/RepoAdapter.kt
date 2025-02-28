@@ -1,11 +1,11 @@
 package com.faranjit.ghrepos.ui.list.adapter
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.faranjit.ghrepos.databinding.ListItemRepoBinding
 import com.faranjit.ghrepos.domain.model.Repo
 
@@ -22,9 +22,7 @@ class RepoAdapter : PagingDataAdapter<Repo, RepoAdapter.RepoViewHolder>(repoItem
     }
 
     override fun onBindViewHolder(holder: RepoViewHolder, position: Int) {
-        val item = getItem(position)
-        Log.d("ReposFragment", "onBindViewHolder: position=$position, item=$item")
-        item?.let { holder.bind(it) }
+        getItem(position)?.let { holder.bind(it) }
     }
 
     class RepoViewHolder internal constructor(
@@ -33,6 +31,11 @@ class RepoAdapter : PagingDataAdapter<Repo, RepoAdapter.RepoViewHolder>(repoItem
 
         fun bind(repo: Repo) {
             binding.txtRepoName.text = repo.name
+            binding.txtRepoVisibility.text = repo.visibility.visibility
+            binding.imageVisibility.setImageResource(repo.visibility.imageId)
+            Glide.with(binding.imgOwner.context)
+                .load(repo.owner.avatarUrl)
+                .into(binding.imgOwner)
         }
     }
 

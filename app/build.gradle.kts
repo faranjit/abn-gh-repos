@@ -17,7 +17,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.faranjit.ghrepos.CustomTestRunner"
     }
 
     buildFeatures {
@@ -62,6 +62,9 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.paging)
 
+    // glide
+    implementation(libs.glide)
+
     // hilt
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation)
@@ -88,6 +91,9 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.coroutines.test)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.compiler)
+    androidTestImplementation(libs.androidx.test.rules)
 }
 
 hilt {

@@ -4,7 +4,6 @@ import android.content.Context
 import com.faranjit.ghrepos.AndroidConnectivityChecker
 import com.faranjit.ghrepos.BuildConfig
 import com.faranjit.ghrepos.ConnectivityChecker
-import com.faranjit.ghrepos.data.api.GithubApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,11 +43,6 @@ object NetworkModule {
         .addConverterFactory(
             json.asConverterFactory("application/json; charset=UTF8".toMediaType())
         ).build()
-
-    @Provides
-    @Singleton
-    fun provideGithubApi(retrofit: Retrofit): GithubApi =
-        retrofit.create(GithubApi::class.java)
 
     @Provides
     @Singleton
