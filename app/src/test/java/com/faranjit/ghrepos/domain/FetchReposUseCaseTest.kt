@@ -1,54 +1,60 @@
 package com.faranjit.ghrepos.domain
 
-import com.faranjit.ghrepos.data.model.OwnerResponse
-import com.faranjit.ghrepos.data.model.RepoResponse
+import androidx.paging.PagingData
+import com.faranjit.ghrepos.data.db.entity.OwnerEntity
+import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import com.faranjit.ghrepos.data.repository.RepoRepository
+import com.faranjit.ghrepos.domain.model.Repo
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class FetchReposUseCaseTest {
-
     private val repository: RepoRepository = mockk()
 
     private val useCase = FetchReposUseCase(repository)
 
     @Test
-    fun `invoke should return mapped repos from repository`() = runTest {
-        // given
-        val username = "faranjit"
-        val repoResponse = createRepoResponse()
-        coEvery { repository.getRepos(username) } returns listOf(repoResponse)
+    fun `invoke should return mapped paging data`() = runTest {
+        // Given
+        val repoEntity = createRepoEntity(1)
+        val pagingData = PagingData.from(listOf(repoEntity))
+        coEvery { repository.getRepos(1, 10) } returns flowOf(pagingData)
 
-        // when
-        val result = useCase(username)
+        // When
+        val result = useCase(1, 10).first()
 
-        // then
-        assertEquals(1, result.size)
-        assertEquals(repoResponse.id, result[0].id)
-        assertEquals(repoResponse.name, result[0].name)
-        assertEquals(repoResponse.fullName, result[0].fullName)
-        assertEquals(repoResponse.description, result[0].description)
-        assertEquals(repoResponse.stars, result[0].starsCount)
-        assertEquals(repoResponse.owner.id, result[0].owner.id)
-        assertEquals(repoResponse.owner.login, result[0].owner.login)
-        assertEquals(repoResponse.owner.avatarUrl, result[0].owner.avatarUrl)
-        assertEquals(repoResponse.htmlUrl, result[0].htmlUrl)
-        assertEquals(repoResponse.visibility, result[0].visibility)
-        coVerify { repository.getRepos(username) }
+        // Then
+        assert(result is PagingData<Repo>)
+        coVerify { repository.getRepos(1, 10) }
     }
 
-    private fun createRepoResponse() = RepoResponse(
-        id = 1L,
+    @Test
+    fun `invoke should use default parameters when not provided`() = runTest {
+        // Given
+        val pagingData = PagingData.from(emptyList<RepoEntity>())
+        coEvery { repository.getRepos(1, 10) } returns flowOf(pagingData)
+
+        // When
+        useCase().first()
+
+        // Then
+        coVerify { repository.getRepos(1, 10) }
+    }
+
+    private fun createRepoEntity(id: Long) = RepoEntity(
+        id = id,
+        repoId = id,
         name = "test-repo",
         fullName = "faranjit/test-repo",
         description = "Test repository",
         stars = 10,
-        owner = OwnerResponse(
-            id = 1L,
+        owner = OwnerEntity(
+            ownerId = 1L,
             login = "faranjit",
             avatarUrl = "https://avatar.url"
         ),

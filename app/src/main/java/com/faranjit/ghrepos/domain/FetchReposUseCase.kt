@@ -1,8 +1,12 @@
 package com.faranjit.ghrepos.domain
 
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.faranjit.ghrepos.data.repository.RepoRepository
 import com.faranjit.ghrepos.domain.model.Repo
 import com.faranjit.ghrepos.domain.model.toRepoModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
@@ -15,13 +19,13 @@ class FetchReposUseCase @Inject constructor(
 ) {
 
     /**
-     * Fetches the list of repositories for the given [username].
+     * Fetches the list of repositories for the given username.
      *
-     * @param username The username of the user whose repositories are to be fetched.
      * @return The list of repositories.
      */
-    suspend operator fun invoke(username: String): List<Repo> =
-        repository.getRepos(username).map {
-            it.toRepoModel()
+    operator fun invoke(
+    ): Flow<PagingData<Repo>> =
+        repository.getRepos().map { pagingData ->
+            pagingData.map { it.toRepoModel() }
         }
 }

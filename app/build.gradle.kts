@@ -22,10 +22,15 @@ android {
 
     buildFeatures {
         buildConfig = true
+        viewBinding = true
     }
 
     buildTypes {
         debug {
+            kotlinOptions {
+                freeCompilerArgs = listOf("-Xdebug")
+            }
+
             buildConfigField("Boolean", "ENABLE_LOGGING", "true")
         }
         release {
@@ -55,6 +60,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation(libs.androidx.paging)
 
     // hilt
     implementation(libs.hilt.android)
@@ -62,8 +68,9 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     // room
-    implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.room.paging)
+    implementation(libs.room.runtime)
     ksp(libs.room.compiler)
 
     // retrofit & okhttp
@@ -73,11 +80,14 @@ dependencies {
 
     implementation(libs.kotlin.serialization)
 
+    testImplementation(libs.androidx.paging.testing)
+    testImplementation(libs.robolectric)
     testImplementation(libs.junit)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.coroutines.test)
 }
 
 hilt {

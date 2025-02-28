@@ -1,7 +1,7 @@
 package com.faranjit.ghrepos.domain.model
 
-import com.faranjit.ghrepos.data.model.OwnerResponse
-import com.faranjit.ghrepos.data.model.RepoResponse
+import com.faranjit.ghrepos.data.db.entity.OwnerEntity
+import com.faranjit.ghrepos.data.db.entity.RepoEntity
 
 data class Repo(
     val id: Long,
@@ -20,7 +20,7 @@ data class RepoOwner(
     val avatarUrl: String,
 )
 
-internal fun RepoResponse.toRepoModel(): Repo = Repo(
+internal fun RepoEntity.toRepoModel(): Repo = Repo(
     id = id,
     name = name,
     fullName = fullName,
@@ -31,9 +31,9 @@ internal fun RepoResponse.toRepoModel(): Repo = Repo(
     owner = owner.toRepoOwnerModel()
 )
 
-internal fun OwnerResponse.toRepoOwnerModel(): RepoOwner =
+internal fun OwnerEntity.toRepoOwnerModel(): RepoOwner =
     RepoOwner(
-        id = id,
+        id = ownerId,
         login = login,
         avatarUrl = avatarUrl
     )

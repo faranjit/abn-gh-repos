@@ -1,5 +1,6 @@
 package com.faranjit.ghrepos.ui.list
 
+import androidx.paging.PagingData
 import com.faranjit.ghrepos.domain.FetchReposUseCase
 import com.faranjit.ghrepos.domain.model.Repo
 import com.faranjit.ghrepos.domain.model.RepoOwner
@@ -8,11 +9,14 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
+import org.junit.Assert.assertNotNull
 import org.junit.Before
 import org.junit.Test
 
@@ -36,23 +40,25 @@ class ReposViewModelTest {
     }
 
     @Test
-    fun `fetchRepos should call use case with username`() = runTest {
-        // given
-        val username = "faranjit"
+    fun `fetchRepos should return paging data from use case`() = runTest {
+        // Given
         val repos = listOf(createRepo())
-        coEvery { fetchReposUseCase(username) } returns repos
+        val pagingData = PagingData.from(repos)
+        val flow = flowOf(pagingData)
+        coEvery { fetchReposUseCase() } returns flow
 
-        // when
-        viewModel.fetchRepos(username)
+        // When
+        val result = viewModel.fetchRepos()
 
-        // then
-        coVerify { fetchReposUseCase(username) }
+        // Then
+        coVerify { fetchReposUseCase() }
+        assertNotNull(result.first())
     }
 
     private fun createRepo() = Repo(
         id = 1L,
-        name = "test-repo",
-        fullName = "faranjit/test-repo",
+        name = "test",
+        fullName = "faranjit/test",
         description = "Test repository",
         starsCount = 10,
         owner = RepoOwner(
@@ -60,7 +66,7 @@ class ReposViewModelTest {
             login = "faranjit",
             avatarUrl = "https://avatar.url"
         ),
-        htmlUrl = "https://github.com/faranjit/test-repo",
+        htmlUrl = "https://github.com/faranjit/test",
         visibility = "public"
     )
 }
