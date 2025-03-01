@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/imgOwner"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:contentDescription="@string/content_desc_owner_avatar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtRepoName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imgOwner"
+            app:layout_constraintTop_toTopOf="@id/imgOwner"
+            tools:text="Repository Name" />
+
+        <TextView
+            android:id="@+id/txtRepoFullName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/txtRepoName"
+            app:layout_constraintTop_toBottomOf="@id/txtRepoName"
+            tools:text="Full Repository Name" />
+
+        <TextView
+            android:id="@+id/txtRepoDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/txtRepoName"
+            app:layout_constraintTop_toBottomOf="@id/txtRepoFullName"
+            tools:text="Repository Description" />
+
+        <TextView
+            android:id="@+id/txtRepoVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            app:layout_constraintStart_toStartOf="@id/txtRepoName"
+            app:layout_constraintTop_toBottomOf="@id/txtRepoDescription"
+            tools:text="Public" />
+
+        <ImageView
+            android:id="@+id/imgRepoVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@string/content_desc_repo_visibility"
+            app:layout_constraintBottom_toBottomOf="@id/txtRepoVisibility"
+            app:layout_constraintStart_toEndOf="@id/txtRepoVisibility"
+            app:tint="?colorPrimary" />
+
+        <Button
+            android:id="@+id/btnOpenInBrowser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/go_to_repo_page"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txtRepoVisibility" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

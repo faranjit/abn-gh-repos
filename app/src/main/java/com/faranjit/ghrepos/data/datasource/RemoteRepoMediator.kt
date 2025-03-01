@@ -8,6 +8,13 @@ import com.faranjit.ghrepos.data.db.entity.RemoteKeysEntity
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import javax.inject.Inject
 
+/**
+ * A remote mediator to fetch the list of repositories from the remote data source.
+ * This class fetches the list of repositories from the remote data source and stores it in the local database.
+ *
+ * @property remoteDataSource The remote data source to fetch the list of repositories.
+ * @property localDataSource The local data source to store the list of repositories.
+ */
 @OptIn(ExperimentalPagingApi::class)
 class RemoteRepoMediator @Inject constructor(
     private val remoteDataSource: RemoteDataSource,

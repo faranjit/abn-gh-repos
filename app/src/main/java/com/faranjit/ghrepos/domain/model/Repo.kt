@@ -1,10 +1,13 @@
 package com.faranjit.ghrepos.domain.model
 
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import com.faranjit.ghrepos.R
 import com.faranjit.ghrepos.data.db.entity.OwnerEntity
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Repo(
     val id: Long,
     val name: String,
@@ -14,13 +17,14 @@ data class Repo(
     val visibility: RepoVisibility,
     val htmlUrl: String,
     val owner: RepoOwner,
-)
+) : Parcelable
 
+@Parcelize
 data class RepoOwner(
     val id: Long,
     val login: String,
     val avatarUrl: String,
-)
+) : Parcelable
 
 enum class RepoVisibility(val visibility: String, @DrawableRes val imageId: Int) {
     PUBLIC("public", R.drawable.ic_visibility_on),

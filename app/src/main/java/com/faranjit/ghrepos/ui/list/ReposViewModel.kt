@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReposViewModel @Inject constructor(
-    private val fetchReposUseCase: FetchReposUseCase,
+    fetchReposUseCase: FetchReposUseCase,
 ) : ViewModel() {
 
     val repos = fetchReposUseCase().cachedIn(viewModelScope)

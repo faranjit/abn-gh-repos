@@ -9,6 +9,21 @@
         android:id="@+id/reposFragment"
         android:name="com.faranjit.ghrepos.ui.list.ReposFragment"
         android:label="Repositories"
-        tools:layout="@layout/fragment_repos" />
+        tools:layout="@layout/fragment_repos">
+
+        <action
+            android:id="@+id/action_reposFragment_to_repoDetailFragment"
+            app:destination="@id/repoDetailFragment" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/repoDetailFragment"
+        android:name="com.faranjit.ghrepos.ui.detail.RepoDetailFragment"
+        android:label="RepoDetailFragment">
+        <argument
+            android:name="repo"
+            app:argType="com.faranjit.ghrepos.domain.model.Repo" />
+    </fragment>
 
 </navigation>

@@ -8,7 +8,7 @@ class FakeGithubApi(
     private val throwError: Boolean = false,
 ) : GithubApi {
 
-    override suspend fun getRepos(page: Int, perPage: Int, token: String): List<RepoResponse> {
+    override suspend fun getRepos(page: Int, perPage: Int, token: String?): List<RepoResponse> {
         if (!throwError) {
             return List(perPage) { index ->
                 RepoResponse(

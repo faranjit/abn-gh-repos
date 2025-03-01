@@ -47,7 +47,7 @@
             tools:text="Public" />
 
         <ImageView
-            android:id="@+id/image_visibility"
+            android:id="@+id/imgRepoVisibility"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_marginStart="8dp"

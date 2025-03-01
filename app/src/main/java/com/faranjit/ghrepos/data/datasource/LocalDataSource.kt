@@ -9,6 +9,14 @@ import com.faranjit.ghrepos.data.db.entity.RemoteKeysEntity
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import javax.inject.Inject
 
+/**
+ * Local data source to interact with the database.
+ * It provides methods to make database operations over the repositories and remote keys.
+ *
+ * @property database The [AppDatabase] instance.
+ * @property repoDao The [RepoDao] instance.
+ * @property remoteKeysDao The [RemoteKeysDao] instance.
+ */
 class LocalDataSource @Inject constructor(
     private val database: AppDatabase,
     private val repoDao: RepoDao,

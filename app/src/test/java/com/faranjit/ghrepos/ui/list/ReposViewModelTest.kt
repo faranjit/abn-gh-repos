@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.faranjit.ghrepos.domain.FetchReposUseCase
 import com.faranjit.ghrepos.domain.model.Repo
 import com.faranjit.ghrepos.domain.model.RepoOwner
+import com.faranjit.ghrepos.domain.model.RepoVisibility
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -68,6 +69,6 @@ class ReposViewModelTest {
             avatarUrl = "https://avatar.url"
         ),
         htmlUrl = "https://github.com/faranjit/test",
-        visibility = "public"
+        visibility = RepoVisibility.PUBLIC
     )
 }

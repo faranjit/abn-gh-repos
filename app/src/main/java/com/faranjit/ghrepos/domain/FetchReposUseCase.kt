@@ -10,7 +10,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
- * Use case to fetch the list of repositories by user name.
+ * A use case to fetch the list of repositories by user name.
+ * This use case fetches the list of repositories for the 'abnamrocoesd' user.
+ * Data is fetched through a repository and the data is transformed to the domain model.
  *
  * @property repository The repository to fetch the list of repositories.
  */
@@ -19,7 +21,7 @@ class FetchReposUseCase @Inject constructor(
 ) {
 
     /**
-     * Fetches the list of repositories for the given username.
+     * Fetches the list of repositories for the 'abnamrocoesd' user.
      *
      * @return The list of repositories.
      */

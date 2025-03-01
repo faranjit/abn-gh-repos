@@ -1,9 +1,13 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.navigation.safe.args)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -18,6 +22,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "com.faranjit.ghrepos.CustomTestRunner"
+
+        val githubToken = gradleLocalProperties(rootDir, providers).getProperty("GITHUB_TOKEN")
+        if (githubToken.isNullOrBlank()) {
+            buildConfigField("String", "GITHUB_TOKEN", "null")
+        } else {
+            buildConfigField("String", "GITHUB_TOKEN", "\"Bearer ${githubToken}\"")
+        }
     }
 
     buildFeatures {
