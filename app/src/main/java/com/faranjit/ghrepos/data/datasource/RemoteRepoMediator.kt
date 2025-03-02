@@ -60,9 +60,8 @@ class RemoteRepoMediator @Inject constructor(
                 }
 
                 localDataSource.insertRemoteKeys(keys)
-                localDataSource.insertRepos(repos.mapIndexed { index, repo ->
-                    // generate unique id for each repo item to maintain order
-                    repo.toEntity((index + (page - 1) * state.config.pageSize).toLong())
+                localDataSource.insertRepos(repos.map { repo ->
+                    repo.toEntity()
                 })
             }
 

@@ -74,8 +74,8 @@ class RemoteRepoMediatorTest {
 
         with(capturedRepos.captured) {
             assertEquals(total, size)
-            assertEquals(0L, first().id)
-            assertEquals((total - 1).toLong(), last().id)
+            assertEquals(0L, first().repoId)
+            assertEquals((total - 1).toLong(), last().repoId)
         }
     }
 
@@ -196,8 +196,8 @@ class RemoteRepoMediatorTest {
 
         with(capturedRepos.captured) {
             assertEquals(pageSize, size)
-            assertEquals(pageSize.toLong(), first().id)
-            assertEquals(((pageSize * page) - 1).toLong(), last().id)
+            assertEquals(0, first().repoId)
+            assertEquals((pageSize - 1).toLong(), last().repoId)
         }
     }
 

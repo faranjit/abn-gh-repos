@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class RepoEntity(
-    @PrimaryKey
-    val id: Long,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long? = null,
     val repoId: Long,
     val name: String,
     val fullName: String,
@@ -21,7 +21,6 @@ data class RepoEntity(
 
 @Entity
 data class OwnerEntity(
-    @PrimaryKey
     val ownerId: Long,
     val login: String,
     val avatarUrl: String,

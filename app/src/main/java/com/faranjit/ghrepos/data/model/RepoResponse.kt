@@ -30,9 +30,8 @@ data class RepoResponse(
      *
      * @return The [RepoEntity] entity.
      */
-    fun toEntity(index: Long): RepoEntity {
+    fun toEntity(): RepoEntity {
         return RepoEntity(
-            id = index,
             repoId = repoId,
             name = name,
             fullName = fullName,

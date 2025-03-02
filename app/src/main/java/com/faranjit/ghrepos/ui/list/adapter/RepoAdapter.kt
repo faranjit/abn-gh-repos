@@ -27,6 +27,7 @@ class RepoAdapter : PagingDataAdapter<Repo, RepoAdapter.RepoViewHolder>(repoItem
         getItem(position)?.let { holder.bind(it) }
     }
 
+
     class RepoViewHolder internal constructor(
         private val binding: ListItemRepoBinding,
     ) : RecyclerView.ViewHolder(binding.root) {
@@ -53,7 +54,8 @@ class RepoAdapter : PagingDataAdapter<Repo, RepoAdapter.RepoViewHolder>(repoItem
             }
 
             override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean {
-                return oldItem == newItem
+                return oldItem.name == newItem.name &&
+                        oldItem.visibility == newItem.visibility
             }
         }
     }

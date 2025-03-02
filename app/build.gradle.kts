@@ -101,12 +101,31 @@ dependencies {
     testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.contrib)
     androidTestImplementation(libs.coroutines.test)
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.test.rules)
 }
 
-hilt {
-    enableAggregatingTask = false
+//hilt {
+//    enableAggregatingTask = false
+//}
+
+ksp {
+    arg("dagger.fastInit", "enabled")
+    arg("dagger.experimentalDaggerErrorMessages", "enabled")
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
+tasks.register("testAll") {
+    description = "Runs all tests in the project"
+    group = "verification"
+
+    dependsOn(
+        "testDebugUnitTest",
+        "connectedDebugAndroidTest",
+    )
+
+    tasks.findByName("connectedDebugAndroidTest")?.mustRunAfter("testDebugUnitTest")
 }
