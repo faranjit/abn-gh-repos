@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
+import androidx.paging.cachedIn
 import com.faranjit.ghrepos.domain.FetchReposUseCase
 import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
 import com.faranjit.ghrepos.ui.ReposUiState
@@ -22,7 +23,7 @@ class ReposViewModel @Inject constructor(
     private val fetchReposUseCase: FetchReposUseCase,
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ReposUiState>(ReposUiState.Initial)
+    private val _uiState = MutableStateFlow<ReposUiState>(ReposUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     private var currentJob: Job? = null
@@ -49,6 +50,7 @@ class ReposViewModel @Inject constructor(
         currentJob = viewModelScope.launch {
             try {
                 fetchReposUseCase()
+                    .cachedIn(this)
                     .collect { pagingData ->
                         _uiState.value = ReposUiState.Success(pagingData)
                     }
