@@ -33,19 +33,6 @@ class FetchReposUseCaseTest {
         coVerify { repository.getRepos() }
     }
 
-    @Test
-    fun `invoke should use default parameters when not provided`() = runTest {
-        // Given
-        val pagingData = PagingData.from(emptyList<RepoEntity>())
-        coEvery { repository.getRepos() } returns flowOf(pagingData)
-
-        // When
-        useCase().first()
-
-        // Then
-        coVerify { repository.getRepos() }
-    }
-
     private fun createRepoEntity(id: Long) = RepoEntity(
         id = id,
         repoId = id,
