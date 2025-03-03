@@ -21,6 +21,7 @@ import com.faranjit.ghrepos.ui.list.adapter.RepoAdapter
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReposFragment : Fragment() {
@@ -31,7 +32,8 @@ class ReposFragment : Fragment() {
     private val viewModel: ReposViewModel by viewModels()
     private val repoAdapter = RepoAdapter()
 
-    private val idlingResource = ReposIdlingResource()
+    @Inject
+    lateinit var idlingResource: ReposIdlingResource
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -83,7 +85,6 @@ class ReposFragment : Fragment() {
                         is ReposUiState.Success -> showRepos(state.pagingData)
                         is ReposUiState.Error -> showError(state)
                         ReposUiState.ConnectionRestored -> showConnectionRestored()
-                        else -> {}
                     }
                 }
             }

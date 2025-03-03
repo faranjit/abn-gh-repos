@@ -24,31 +24,25 @@ class RemoteRepoMediator @Inject constructor(
     private val localDataSource: LocalDataSource
 ) : RemoteMediator<Int, RepoEntity>() {
 
-    override suspend fun initialize(): InitializeAction {
-        return if (networkMonitor.isOnline.value) {
-            InitializeAction.LAUNCH_INITIAL_REFRESH
-        } else {
-            if (localDataSource.hasAnyRepos()) {
-                InitializeAction.SKIP_INITIAL_REFRESH
-            } else {
-                InitializeAction.LAUNCH_INITIAL_REFRESH
-            }
-        }
-    }
-
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, RepoEntity>
     ): MediatorResult {
         return try {
+            if (!networkMonitor.isOnline.value) {
+                // No network, try to load from DB
+                if (localDataSource.hasAnyRepos()) {
+                    return MediatorResult.Success(endOfPaginationReached = true)
+                } else {
+                    // No repos in DB, return error
+                    return MediatorResult.Error(NoRepoFoundException(false))
+                }
+            }
+
             val page = when (loadType) {
                 LoadType.REFRESH -> FIRST_PAGE
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
                 LoadType.APPEND -> {
-                    if (!networkMonitor.isOnline.value) {
-                        return MediatorResult.Success(endOfPaginationReached = true)
-                    }
-
                     val remoteKeys = getRemoteKeyForLastItem(state)
                     val nextKey = remoteKeys?.nextKey
                     nextKey ?: return MediatorResult.Success(
@@ -86,7 +80,6 @@ class RemoteRepoMediator @Inject constructor(
 
             MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (e: Exception) {
-            // try to get results from db if exists
             MediatorResult.Error(e)
         }
     }

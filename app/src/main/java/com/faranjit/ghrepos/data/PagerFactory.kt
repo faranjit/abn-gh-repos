@@ -21,7 +21,8 @@ import kotlinx.coroutines.flow.Flow
 @OptIn(ExperimentalPagingApi::class)
 interface PagerFactory<Key : Any, Value : Any> {
     /**
-     * Creates a paging flow.
+     * Creates a [Flow] of [PagingData].
+     *
      * @param config The [PagingConfig] to be used.
      * @param remoteMediator The [RemoteMediator] to be used.
      * @param pagingSourceFactory The factory function to create a [PagingSource].

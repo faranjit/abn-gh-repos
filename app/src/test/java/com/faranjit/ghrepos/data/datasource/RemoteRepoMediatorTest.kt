@@ -18,6 +18,7 @@ import io.mockk.coVerifyOrder
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.test.runTest
+import okio.IOException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Before
@@ -41,47 +42,10 @@ class RemoteRepoMediatorTest {
     }
 
     @Test
-    fun `when offline and has data, initialize should skip refresh`() = runTest {
+    fun `when offline and there is local data, load should return success with end of pagination`() = runTest {
         // Given
         coEvery { networkMonitor.isOnline.value } returns false
         coEvery { localDataSource.hasAnyRepos() } returns true
-
-        // When
-        val result = mediator.initialize()
-
-        // Then
-        assertEquals(RemoteMediator.InitializeAction.SKIP_INITIAL_REFRESH, result)
-    }
-
-    @Test
-    fun `when offline and no data, initialize should launch refresh`() = runTest {
-        // Given
-        coEvery { networkMonitor.isOnline.value } returns false
-        coEvery { localDataSource.hasAnyRepos() } returns false
-
-        // When
-        val result = mediator.initialize()
-
-        // Then
-        assertEquals(RemoteMediator.InitializeAction.LAUNCH_INITIAL_REFRESH, result)
-    }
-
-    @Test
-    fun `when online, initialize should launch refresh`() = runTest {
-        // Given
-        coEvery { networkMonitor.isOnline.value } returns true
-
-        // When
-        val result = mediator.initialize()
-
-        // Then
-        assertEquals(RemoteMediator.InitializeAction.LAUNCH_INITIAL_REFRESH, result)
-    }
-
-    @Test
-    fun `when offline, load should return success with end of pagination`() = runTest {
-        // Given
-        coEvery { networkMonitor.isOnline.value } returns false
         val pagingState = createPagingState(30)
 
         // When
@@ -90,6 +54,21 @@ class RemoteRepoMediatorTest {
         // Then
         assert(result is RemoteMediator.MediatorResult.Success)
         assert((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
+    }
+
+    @Test
+    fun `when offline and no data, load should return NoRepoFoundException`() = runTest {
+        // Given
+        coEvery { networkMonitor.isOnline.value } returns false
+        coEvery { localDataSource.hasAnyRepos() } returns false
+        val pagingState = createPagingState(30)
+
+        // When
+        val result = mediator.load(LoadType.REFRESH, pagingState)
+
+        // Then
+        assert(result is RemoteMediator.MediatorResult.Error)
+        assert((result as RemoteMediator.MediatorResult.Error).throwable is NoRepoFoundException)
     }
 
     @Test
@@ -195,6 +174,21 @@ class RemoteRepoMediatorTest {
         // Given
         val pagingState = createPagingState(30)
         val exception = RuntimeException("error")
+        coEvery { remoteDataSource.getRepos(any(), any()) } throws exception
+
+        // When
+        val result = mediator.load(LoadType.REFRESH, pagingState)
+
+        // Then
+        assert(result is RemoteMediator.MediatorResult.Error)
+        assertEquals(exception, (result as RemoteMediator.MediatorResult.Error).throwable)
+    }
+
+    @Test
+    fun `when api call fails with IOException, then return error result`() = runTest {
+        // Given
+        val pagingState = createPagingState(30)
+        val exception = IOException("Network error")
         coEvery { remoteDataSource.getRepos(any(), any()) } throws exception
 
         // When

@@ -6,4 +6,5 @@
     <string name="btn_retry">Retry</string>
     <string name="connection_restored">Connection restored</string>
     <string name="btn_refresh">Refresh?</string>
+    <string name="no_repos_found">No data found. Either you have no repo or are offline!</string>
 </resources>

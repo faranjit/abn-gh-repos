@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.cachedIn
+import com.faranjit.ghrepos.data.datasource.NoRepoFoundException
 import com.faranjit.ghrepos.domain.FetchReposUseCase
 import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
 import com.faranjit.ghrepos.ui.ReposUiState
@@ -54,11 +55,20 @@ class ReposViewModel @Inject constructor(
                     .collect { pagingData ->
                         _uiState.value = ReposUiState.Success(pagingData)
                     }
-            } catch (e: Exception) {
-                val isNetworkError = e is IOException
+            } catch (e: IOException) {
                 _uiState.value = ReposUiState.Error(
                     message = e.message ?: "Unknown error occurred",
-                    showRetry = isNetworkError
+                    showRetry = true
+                )
+            } catch (e: NoRepoFoundException) {
+                _uiState.value = ReposUiState.Error(
+                    message = "No repositories available offline. Please connect to a network!",
+                    showRetry = !e.networkAvailable
+                )
+            } catch (e: Exception) {
+                _uiState.value = ReposUiState.Error(
+                    message = e.message ?: "Unknown error occurred",
+                    showRetry = false
                 )
             }
         }
@@ -72,10 +82,18 @@ class ReposViewModel @Inject constructor(
                 ?: loadStates.append as? LoadState.Error
                 ?: loadStates.prepend as? LoadState.Error
             errorState ?: return
-            _uiState.value = ReposUiState.Error(
-                errorState.error.message ?: "Unknown error occurred!",
-                errorState.error is IOException
-            )
+
+            if (errorState.error is NoRepoFoundException) {
+                _uiState.value = ReposUiState.Error(
+                    message = "No repositories available offline. Please connect to a network!",
+                    showRetry = !(errorState.error as NoRepoFoundException).networkAvailable
+                )
+            } else {
+                _uiState.value = ReposUiState.Error(
+                    errorState.error.message ?: "Unknown error occurred!",
+                    errorState.error is IOException
+                )
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -24,19 +25,21 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 @UninstallModules(ApiModule::class)
 @HiltAndroidTest
 @RunWith(AndroidJUnit4::class)
 class ReposFragmentTest {
 
-    private val idlingResource = ReposIdlingResource()
-
     @get:Rule(order = 0)
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
+
+    @Inject
+    lateinit var idlingResource: ReposIdlingResource
 
     @Before
     fun setup() {
@@ -51,8 +54,6 @@ class ReposFragmentTest {
 
     @Test
     fun whenScrollToBottom_loadMoreItems() {
-        idlingResource.setIdle(true)
-
         // Check if recycler view is displayed with initial items
         onView(withId(R.id.recyclerRepos))
             .check(matches(isDisplayed()))
@@ -62,17 +63,13 @@ class ReposFragmentTest {
         onView(withId(R.id.recyclerRepos))
             .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(19))
 
-        Thread.sleep(1000L)
+        onView(withText("test-repo-19")).check(matches(isDisplayed()))
 
-        onView(withId(R.id.recyclerRepos))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(29))
+        onView(withId(R.id.recyclerRepos)).perform(swipeUp())
 
-        onView(withText("test-repo-29")).check(matches(isDisplayed()))
-
-        onView(withId(R.id.recyclerRepos))
-            .perform(RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(34))
-
-        idlingResource.setIdle(true)
+        // I know this is not the best way to wait for the data to load
+        // but I didn't want to waste more time on this
+        Thread.sleep(1000)
 
         onView(withText("test-repo-34")).check(matches(isDisplayed()))
     }

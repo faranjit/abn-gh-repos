@@ -4,6 +4,7 @@ import androidx.paging.CombinedLoadStates
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
+import com.faranjit.ghrepos.data.datasource.NoRepoFoundException
 import com.faranjit.ghrepos.domain.FetchReposUseCase
 import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
 import com.faranjit.ghrepos.domain.model.Repo
@@ -199,6 +200,25 @@ class ReposViewModelTest {
             ReposUiState.Error(
                 message = "Unknown error",
                 showRetry = false
+            ),
+            viewModel.uiState.value
+        )
+    }
+
+    @Test
+    fun `when fetchRepos returns NoRepoFoundException should show appropriate error`() = runTest(testDispatcher) {
+        // Given
+        val exception = NoRepoFoundException(networkAvailable = false)
+        coEvery { fetchReposUseCase() } throws exception
+
+        // When
+        viewModel.fetchRepos()
+
+        // Then
+        assertEquals(
+            ReposUiState.Error(
+                message = "No repositories available offline. Please connect to a network!",
+                showRetry = true
             ),
             viewModel.uiState.value
         )

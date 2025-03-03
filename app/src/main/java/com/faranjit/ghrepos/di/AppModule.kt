@@ -13,6 +13,7 @@ import com.faranjit.ghrepos.data.repository.RepoRepository
 import com.faranjit.ghrepos.data.repository.RepoRepositoryImpl
 import com.faranjit.ghrepos.domain.FetchReposUseCase
 import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
+import com.faranjit.ghrepos.ui.list.ReposIdlingResource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -60,7 +61,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRepoRepository(
-        networkMonitor: NetworkConnectivityMonitor,
         remoteMediator: RemoteRepoMediator,
         localDataSource: LocalDataSource,
     ): RepoRepository {
@@ -80,5 +80,11 @@ object AppModule {
     @Singleton
     fun provideFetchReposUseCase(repository: RepoRepository): FetchReposUseCase {
         return FetchReposUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideReposIdlingResource(): ReposIdlingResource {
+        return ReposIdlingResource()
     }
 }
