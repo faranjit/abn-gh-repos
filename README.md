@@ -11,10 +11,12 @@ The app showcases clean architecture principles, offline-first approach, and mod
 
 ## Architecture
 The app follows Clean Architecture principles with MVVM pattern:
+```
 app/
 ├── data/           # Data layer (Repository implementations, API, Database)
 ├── domain/         # Domain layer (Use cases, Domain models)
 └── ui/             # Presentation layer (ViewModels, UI components)
+```
 
 ### Key Components
 - Repository Pattern: Manages data operations between remote and local sources
