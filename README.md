@@ -42,8 +42,7 @@ app/
 
 ## Getting Started
 ### Setup
-1. Clone the repository:
-   git clone https://github.com/yourusername/github-repos-app.git
+1. Extract files from the zip
 2. Open the project in Android Studio
 3. Add your GitHub Personal Access Token:
    - Create local.properties in root directory if not exists
