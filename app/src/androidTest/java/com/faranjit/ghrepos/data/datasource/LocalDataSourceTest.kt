@@ -14,6 +14,7 @@ import com.faranjit.ghrepos.data.db.entity.RemoteKeysEntity
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -63,6 +64,28 @@ class LocalDataSourceTest {
         // Then
         assertTrue(page is PagingSource.LoadResult.Page)
         assertEquals(repos, (page as PagingSource.LoadResult.Page).data)
+    }
+
+    @Test
+    fun hasAnyRepos() = runTest {
+        // Given
+        val repo = createRepoEntity(1)
+        dataSource.insertRepos(listOf(repo))
+
+        // When
+        val result = dataSource.hasAnyRepos()
+
+        // Then
+        assertTrue(result)
+    }
+
+    @Test
+    fun hasNoRepos() = runTest {
+        // When
+        val result = dataSource.hasAnyRepos()
+
+        // Then
+        assertFalse(result)
     }
 
     @Test

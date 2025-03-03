@@ -1,9 +1,7 @@
 package com.faranjit.ghrepos.data.repository
 
-import android.util.Log
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagingConfig
-import androidx.paging.PagingData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
 import com.faranjit.ghrepos.createRepoEntities
@@ -13,9 +11,7 @@ import com.faranjit.ghrepos.data.datasource.LocalDataSource
 import com.faranjit.ghrepos.data.datasource.RemoteRepoMediator
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import io.mockk.mockkStatic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
@@ -41,8 +37,6 @@ class RepoRepositoryImplTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        mockkStatic(Log::class)
-        every { Log.isLoggable(any(), any()) } returns false
 
         localDataSource = mockk()
         remoteMediator = mockk()
@@ -55,7 +49,7 @@ class RepoRepositoryImplTest {
     }
 
     @Test
-    fun `getRepos when network is available should return repos with remote mediator`() = runTest {
+    fun `getRepos should return repos from pager factory`() = runTest {
         // Given
         val entities = createRepoEntities(pagingConfig.pageSize)
         val pagerFactory = FakeRepoPagerFactory(entities)
@@ -71,7 +65,7 @@ class RepoRepositoryImplTest {
 
         // When
         val result = repository.getRepos().first()
-        val repoList = (result as? PagingData<RepoEntity>)?.let { pagingData ->
+        val repoList = result.let { pagingData ->
             val differ = AsyncPagingDataDiffer(
                 diffCallback = RepoDiffCallback(),
                 updateCallback = NoopListCallback(),
@@ -79,7 +73,7 @@ class RepoRepositoryImplTest {
             )
             differ.submitData(pagingData)
             differ.snapshot().items
-        } ?: emptyList()
+        }
 
         // Then
         assertEquals(pagingConfig.pageSize, repoList.size)
@@ -90,44 +84,6 @@ class RepoRepositoryImplTest {
             assertEquals(entities[index].description, repo.description)
         }
     }
-
-    @Test
-    fun `getRepos when network is unavailable should return repos without remote mediator`() =
-        runTest {
-            // Given
-            val entities = createRepoEntities(pagingConfig.pageSize)
-            val pagerFactory = FakeRepoPagerFactory(entities)
-
-            repository = RepoRepositoryImpl(
-                localDataSource,
-                remoteMediator,
-                pagingConfig,
-                pagerFactory
-            )
-
-            coEvery { localDataSource.getAllRepos() } returns FakePagingSource(entities)
-
-            // When
-            val result = repository.getRepos().first()
-            val repoList = (result as? PagingData<RepoEntity>)?.let { pagingData ->
-                val differ = AsyncPagingDataDiffer(
-                    diffCallback = RepoDiffCallback(),
-                    updateCallback = NoopListCallback(),
-                    workerDispatcher = testDispatcher
-                )
-                differ.submitData(pagingData)
-                differ.snapshot().items
-            } ?: emptyList()
-
-            // Then
-            assertEquals(pagingConfig.pageSize, repoList.size)
-            repoList.forEachIndexed { index, repo ->
-                assertEquals(entities[index].id, repo.id)
-                assertEquals(entities[index].name, repo.name)
-                assertEquals(entities[index].fullName, repo.fullName)
-                assertEquals(entities[index].description, repo.description)
-            }
-        }
 }
 
 private class RepoDiffCallback : DiffUtil.ItemCallback<RepoEntity>() {

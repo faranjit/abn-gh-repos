@@ -6,6 +6,7 @@ import androidx.paging.PagingSource
 import androidx.paging.RemoteMediator
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.take
@@ -13,12 +14,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 
-@RunWith(RobolectricTestRunner::class)
-@Config(manifest = Config.NONE)
 @OptIn(ExperimentalPagingApi::class)
 class DefaultRepoPagerFactoryTest {
 
@@ -26,7 +22,7 @@ class DefaultRepoPagerFactoryTest {
         DefaultRepoPagerFactory()
 
     @Test
-    fun `createPager should create pager with given config and mediator`() {
+    fun `createPagerFlow should create flow with given config and mediator`() {
         // Given
         val config = PagingConfig(10)
         val remoteMediator = mockk<RemoteMediator<Int, RepoEntity>>()
@@ -43,7 +39,7 @@ class DefaultRepoPagerFactoryTest {
     }
 
     @Test
-    fun `createPager should create pager without remote mediator`() {
+    fun `createPagerFlow should create flow when remote mediator is null`() {
         // Given
         val config = PagingConfig(10)
         val pagingSource = mockk<PagingSource<Int, RepoEntity>>()
@@ -59,7 +55,7 @@ class DefaultRepoPagerFactoryTest {
     }
 
     @Test
-    fun `createPager should use provided paging source factory`() = runTest {
+    fun `createPagerFlow should use provided paging source factory`() = runTest {
         // Given
         val config = PagingConfig(10)
         val pagingSource = mockk<PagingSource<Int, RepoEntity>>().apply {
@@ -81,5 +77,6 @@ class DefaultRepoPagerFactoryTest {
         assertNotNull(pagerFlow)
         pagerFlow.take(1).collect {}
         assertTrue(factoryCalled)
+        coVerify { pagingSource.registerInvalidatedCallback(any()) }
     }
 }
