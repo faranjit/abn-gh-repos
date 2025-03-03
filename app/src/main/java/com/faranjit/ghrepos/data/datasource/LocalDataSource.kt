@@ -33,6 +33,15 @@ class LocalDataSource @Inject constructor(
     }
 
     /**
+     * Checks if there are any repositories stored in the local database.
+     *
+     * @return True if there is at least one repository in the database, false otherwise.
+     */
+    suspend fun hasAnyRepos(): Boolean {
+        return repoDao.getReposCount() > 0
+    }
+
+    /**
      * Get all repos from the database.
      *
      * @return [PagingSource] of [RepoEntity].

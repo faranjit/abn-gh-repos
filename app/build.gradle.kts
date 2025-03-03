@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.androidx.paging)
+    implementation(libs.androidx.espresso.idling.resource)
 
     // glide
     implementation(libs.glide)
@@ -107,10 +108,6 @@ dependencies {
     kspAndroidTest(libs.hilt.compiler)
     androidTestImplementation(libs.androidx.test.rules)
 }
-
-//hilt {
-//    enableAggregatingTask = false
-//}
 
 ksp {
     arg("dagger.fastInit", "enabled")

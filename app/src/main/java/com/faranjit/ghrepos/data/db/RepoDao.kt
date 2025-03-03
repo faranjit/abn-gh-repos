@@ -15,6 +15,9 @@ interface RepoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRepos(repos: List<RepoEntity>)
 
+    @Query("SELECT COUNT(*) FROM repoentity")
+    suspend fun getReposCount(): Int
+
     @Query("SELECT * FROM RepoEntity")
     fun getAllRepos(): PagingSource<Int, RepoEntity>
 

@@ -1,7 +1,6 @@
 package com.faranjit.ghrepos.di
 
 import androidx.paging.PagingConfig
-import com.faranjit.ghrepos.ConnectivityChecker
 import com.faranjit.ghrepos.data.DefaultRepoPagerFactory
 import com.faranjit.ghrepos.data.api.GithubApi
 import com.faranjit.ghrepos.data.datasource.LocalDataSource
@@ -13,6 +12,7 @@ import com.faranjit.ghrepos.data.db.RepoDao
 import com.faranjit.ghrepos.data.repository.RepoRepository
 import com.faranjit.ghrepos.data.repository.RepoRepositoryImpl
 import com.faranjit.ghrepos.domain.FetchReposUseCase
+import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,10 +46,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRemoteMediator(
+        networkMonitor: NetworkConnectivityMonitor,
         remoteDataSource: RemoteDataSource,
         localDataSource: LocalDataSource
     ): RemoteRepoMediator {
         return RemoteRepoMediator(
+            networkMonitor = networkMonitor,
             remoteDataSource = remoteDataSource,
             localDataSource = localDataSource
         )
@@ -58,18 +60,17 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRepoRepository(
-        connectivityChecker: ConnectivityChecker,
+        networkMonitor: NetworkConnectivityMonitor,
         remoteMediator: RemoteRepoMediator,
         localDataSource: LocalDataSource,
     ): RepoRepository {
         return RepoRepositoryImpl(
-            connectivityChecker = connectivityChecker,
             localDataSource = localDataSource,
             remoteMediator = remoteMediator,
             pagingConfig = PagingConfig(
                 pageSize = 10,
                 enablePlaceholders = false,
-                initialLoadSize = 10
+                initialLoadSize = 20,
             ),
             pagerFactory = DefaultRepoPagerFactory(),
         )

@@ -1,9 +1,9 @@
 package com.faranjit.ghrepos.di
 
 import android.content.Context
-import com.faranjit.ghrepos.AndroidConnectivityChecker
 import com.faranjit.ghrepos.BuildConfig
-import com.faranjit.ghrepos.ConnectivityChecker
+import com.faranjit.ghrepos.domain.DefaultNetworkConnectivityMonitor
+import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -46,6 +46,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideConnectivityChecker(@ApplicationContext context: Context): ConnectivityChecker =
-        AndroidConnectivityChecker(context)
+    fun provideNetworkConnectivityMonitor(
+        @ApplicationContext context: Context
+    ): NetworkConnectivityMonitor = DefaultNetworkConnectivityMonitor(context)
 }

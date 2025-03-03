@@ -10,7 +10,7 @@ fun createRepoEntities(size: Int) = (1..size).map { createRepoEntity(it.toLong()
 fun createRepoEntity(id: Long) = RepoEntity(
     id = id,
     repoId = id,
-    name = "test-repo",
+    name = "test-repo-$id",
     fullName = "faranjit/test-repo",
     description = "Test repository",
     stars = 10,
@@ -25,7 +25,7 @@ fun createRepoEntity(id: Long) = RepoEntity(
 
 fun createRepoResponse(id: Int) = RepoResponse(
     repoId = id.toLong(),
-    name = "test-repo $id",
+    name = "test-repo-$id",
     fullName = "faranjit/test-repo-$id",
     description = "Test repository $id",
     stars = id * 2,

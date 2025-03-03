@@ -3,8 +3,9 @@ package com.faranjit.ghrepos.com.faranjit.ghrepos.data.api
 import com.faranjit.ghrepos.createRepoResponse
 import com.faranjit.ghrepos.data.api.GithubApi
 import com.faranjit.ghrepos.data.model.RepoResponse
+import javax.inject.Inject
 
-class FakeGithubApi: GithubApi {
+class FakeGithubApi @Inject constructor() : GithubApi {
 
     private val repos = List(35) { index ->
         createRepoResponse(index)

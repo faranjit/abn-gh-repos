@@ -4,7 +4,6 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
-import com.faranjit.ghrepos.ConnectivityChecker
 import com.faranjit.ghrepos.data.DefaultRepoPagerFactory
 import com.faranjit.ghrepos.data.PagerFactory
 import com.faranjit.ghrepos.data.datasource.LocalDataSource
@@ -22,7 +21,6 @@ import javax.inject.Inject
  * The [PagingData] is created with a [PagingConfig] that defines the page size.
  * [PagerFactory] creates a [Pager] that fetches the data from the local database and the network.
  *
- * @property connectivityChecker The checker to check if the network is available.
  * @property localDataSource The local data source to fetch the list of repositories.
  * @property remoteMediator The remote mediator to fetch the list of repositories from the network.
  * @property pagingConfig The paging configuration to be used.
@@ -30,7 +28,6 @@ import javax.inject.Inject
  */
 @OptIn(ExperimentalPagingApi::class)
 class RepoRepositoryImpl @Inject constructor(
-    private val connectivityChecker: ConnectivityChecker,
     private val localDataSource: LocalDataSource,
     private val remoteMediator: RemoteRepoMediator,
     private val pagingConfig: PagingConfig,
@@ -40,7 +37,7 @@ class RepoRepositoryImpl @Inject constructor(
     override fun getRepos(): Flow<PagingData<RepoEntity>> {
         return pagerFactory.createPagerFlow(
             config = pagingConfig,
-            remoteMediator = if (connectivityChecker.isNetworkAvailable()) remoteMediator else null,
+            remoteMediator = remoteMediator,
             pagingSourceFactory = { localDataSource.getAllRepos() }
         )
     }

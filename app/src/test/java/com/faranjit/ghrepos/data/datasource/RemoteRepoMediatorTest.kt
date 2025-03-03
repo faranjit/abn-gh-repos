@@ -11,6 +11,7 @@ import com.faranjit.ghrepos.data.db.entity.RemoteKeysEntity
 import com.faranjit.ghrepos.data.db.entity.RepoEntity
 import com.faranjit.ghrepos.data.model.OwnerResponse
 import com.faranjit.ghrepos.data.model.RepoResponse
+import com.faranjit.ghrepos.domain.NetworkConnectivityMonitor
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
@@ -24,15 +25,71 @@ import org.junit.Test
 
 @OptIn(ExperimentalPagingApi::class)
 class RemoteRepoMediatorTest {
+    private lateinit var networkMonitor: NetworkConnectivityMonitor
     private lateinit var remoteDataSource: RemoteDataSource
     private lateinit var localDataSource: LocalDataSource
     private lateinit var mediator: RemoteRepoMediator
 
     @Before
     fun setup() {
+        networkMonitor = mockk<NetworkConnectivityMonitor>().apply {
+            coEvery { isOnline.value } returns true
+        }
         remoteDataSource = mockk()
         localDataSource = mockk()
-        mediator = RemoteRepoMediator(remoteDataSource, localDataSource)
+        mediator = RemoteRepoMediator(networkMonitor, remoteDataSource, localDataSource)
+    }
+
+    @Test
+    fun `when offline and has data, initialize should skip refresh`() = runTest {
+        // Given
+        coEvery { networkMonitor.isOnline.value } returns false
+        coEvery { localDataSource.hasAnyRepos() } returns true
+
+        // When
+        val result = mediator.initialize()
+
+        // Then
+        assertEquals(RemoteMediator.InitializeAction.SKIP_INITIAL_REFRESH, result)
+    }
+
+    @Test
+    fun `when offline and no data, initialize should launch refresh`() = runTest {
+        // Given
+        coEvery { networkMonitor.isOnline.value } returns false
+        coEvery { localDataSource.hasAnyRepos() } returns false
+
+        // When
+        val result = mediator.initialize()
+
+        // Then
+        assertEquals(RemoteMediator.InitializeAction.LAUNCH_INITIAL_REFRESH, result)
+    }
+
+    @Test
+    fun `when online, initialize should launch refresh`() = runTest {
+        // Given
+        coEvery { networkMonitor.isOnline.value } returns true
+
+        // When
+        val result = mediator.initialize()
+
+        // Then
+        assertEquals(RemoteMediator.InitializeAction.LAUNCH_INITIAL_REFRESH, result)
+    }
+
+    @Test
+    fun `when offline, load should return success with end of pagination`() = runTest {
+        // Given
+        coEvery { networkMonitor.isOnline.value } returns false
+        val pagingState = createPagingState(30)
+
+        // When
+        val result = mediator.load(LoadType.APPEND, pagingState)
+
+        // Then
+        assert(result is RemoteMediator.MediatorResult.Success)
+        assert((result as RemoteMediator.MediatorResult.Success).endOfPaginationReached)
     }
 
     @Test

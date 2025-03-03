@@ -6,8 +6,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListUpdateCallback
-import com.faranjit.ghrepos.ConnectivityChecker
-import com.faranjit.ghrepos.TestConnectivityChecker
 import com.faranjit.ghrepos.createRepoEntities
 import com.faranjit.ghrepos.data.FakePagingSource
 import com.faranjit.ghrepos.data.FakeRepoPagerFactory
@@ -33,7 +31,6 @@ import org.junit.Test
 @OptIn(ExperimentalCoroutinesApi::class)
 class RepoRepositoryImplTest {
 
-    private lateinit var connectivityChecker: ConnectivityChecker
     private lateinit var localDataSource: LocalDataSource
     private lateinit var remoteMediator: RemoteRepoMediator
     private lateinit var pagingConfig: PagingConfig
@@ -47,7 +44,6 @@ class RepoRepositoryImplTest {
         mockkStatic(Log::class)
         every { Log.isLoggable(any(), any()) } returns false
 
-        connectivityChecker = mockk()
         localDataSource = mockk()
         remoteMediator = mockk()
         pagingConfig = PagingConfig(10)
@@ -61,12 +57,10 @@ class RepoRepositoryImplTest {
     @Test
     fun `getRepos when network is available should return repos with remote mediator`() = runTest {
         // Given
-        val connectivityChecker = TestConnectivityChecker(true)
         val entities = createRepoEntities(pagingConfig.pageSize)
         val pagerFactory = FakeRepoPagerFactory(entities)
 
         repository = RepoRepositoryImpl(
-            connectivityChecker,
             localDataSource,
             remoteMediator,
             pagingConfig,
@@ -101,12 +95,10 @@ class RepoRepositoryImplTest {
     fun `getRepos when network is unavailable should return repos without remote mediator`() =
         runTest {
             // Given
-            val connectivityChecker = TestConnectivityChecker(false)
             val entities = createRepoEntities(pagingConfig.pageSize)
             val pagerFactory = FakeRepoPagerFactory(entities)
 
             repository = RepoRepositoryImpl(
-                connectivityChecker,
                 localDataSource,
                 remoteMediator,
                 pagingConfig,

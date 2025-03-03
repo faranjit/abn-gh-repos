@@ -3,4 +3,7 @@
     <string name="content_desc_owner_avatar">Avatar of the owner of the repository</string>
     <string name="content_desc_repo_visibility">Visibility of the repository</string>
     <string name="go_to_repo_page">Go To Repo</string>
+    <string name="btn_retry">Retry</string>
+    <string name="connection_restored">Connection restored</string>
+    <string name="btn_refresh">Refresh?</string>
 </resources>
